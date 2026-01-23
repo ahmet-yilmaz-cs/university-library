@@ -10,7 +10,7 @@ import {
   Path,
 } from "react-hook-form";
 
-import { ZodType } from "zod";
+import { z, ZodType } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
