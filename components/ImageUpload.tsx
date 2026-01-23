@@ -2,7 +2,6 @@
 
 import { IKImage, ImageKitProvider, IKUpload } from "imagekitio-next";
 import config from "@/lib/config";
-import ImageKit from "imagekit";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
@@ -30,10 +29,19 @@ const authenticator = async () => {
     const { signature, expire, token } = data;
 
     return { token, expire, signature };
-  } catch (error: any) {
-    throw new Error(`Authentication request failed: ${error.message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`Authentication request failed: ${errorMessage}`);
   }
 };
+
+interface UploadError {
+  message: string;
+}
+
+interface UploadResponse {
+  filePath: string;
+}
 
 const ImageUpload = ({
   onFileChange,
@@ -43,7 +51,7 @@ const ImageUpload = ({
   const ikUploadRef = useRef(null);
   const [file, setFile] = useState<{ filePath: string } | null>(null);
 
-  const onError = (error: any) => {
+  const onError = (error: UploadError) => {
     console.log(error);
     toast({
       title: "Image Upload Failed",
@@ -51,7 +59,7 @@ const ImageUpload = ({
       variant: "default",
     });
   };
-  const onSuccess = (res: any) => {
+  const onSuccess = (res: UploadResponse) => {
     setFile(res);
     onFileChange(res.filePath);
 
@@ -61,7 +69,6 @@ const ImageUpload = ({
     });
   };
 
-  // @ts-ignore
   return (
     <ImageKitProvider
       publicKey={publicKey}
@@ -81,7 +88,7 @@ const ImageUpload = ({
           e.preventDefault();
 
           if (ikUploadRef.current) {
-            //@ts-ignore
+            // @ts-expect-error - ref type not fully compatible
             ikUploadRef.current?.click();
           }
         }}
