@@ -1,5 +1,5 @@
 {
-  "id": "5d890fab-c9ab-4b0c-9879-d5c68c6d313c",
+  "id": "aa0068f3-e243-4c1e-9be3-bac64918c082",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -21,12 +21,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "author": {
           "name": "author",
           "type": "varchar(255)",
@@ -35,24 +29,12 @@
         },
         "genre": {
           "name": "genre",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "rating": {
           "name": "rating",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "total_copies": {
-          "name": "total_copies",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "available_copies": {
-          "name": "available_copies",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -65,9 +47,29 @@
         },
         "cover_color": {
           "name": "cover_color",
-          "type": "varchar(255)",
+          "type": "varchar(7)",
           "primaryKey": false,
           "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_copies": {
+          "name": "total_copies",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "available_copies": {
+          "name": "available_copies",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "video_url": {
           "name": "video_url",
@@ -77,7 +79,7 @@
         },
         "summary": {
           "name": "summary",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -92,7 +94,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "books_id_unique": {
+          "name": "books_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -140,18 +150,18 @@
         },
         "status": {
           "name": "status",
-          "type": "status_enum",
+          "type": "status",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "'PENDING'"
         },
         "role": {
           "name": "role",
-          "type": "role_enum",
+          "type": "role",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "'USER'"
         },
         "last_activity_date": {
@@ -193,13 +203,6 @@
           "columns": [
             "university_id"
           ]
-        },
-        "users_university_card_unique": {
-          "name": "users_university_card_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "university_card"
-          ]
         }
       },
       "policies": {},
@@ -208,24 +211,24 @@
     }
   },
   "enums": {
-    "public.borrow_status_enum": {
-      "name": "borrow_status_enum",
+    "public.borrow_status": {
+      "name": "borrow_status",
       "schema": "public",
       "values": [
         "BORROWED",
         "RETURNED"
       ]
     },
-    "public.role_enum": {
-      "name": "role_enum",
+    "public.role": {
+      "name": "role",
       "schema": "public",
       "values": [
-        "ADMIN",
-        "USER"
+        "USER",
+        "ADMIN"
       ]
     },
-    "public.status_enum": {
-      "name": "status_enum",
+    "public.status": {
+      "name": "status",
       "schema": "public",
       "values": [
         "PENDING",

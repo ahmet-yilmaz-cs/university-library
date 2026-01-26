@@ -59,17 +59,37 @@ const Sidebar = ({ session }: { session: Session }) => {
         </div>
       </div>
 
-      <div className="user">
-        <Avatar>
-          <AvatarFallback className="bg-amber-100">
-            {getInitials(session?.user?.name || "IN")}
-          </AvatarFallback>
-        </Avatar>
+      <div className="flex items-center gap-2">
+        <div className="user flex-1">
+          <Avatar>
+            <AvatarFallback className="bg-amber-100">
+              {getInitials(session?.user?.name || "IN")}
+            </AvatarFallback>
+          </Avatar>
 
-        <div className="flex flex-col max-md:hidden">
-          <p className="font-semibold text-dark-200">{session?.user?.name}</p>
-          <p className="text-xs text-light-500">{session?.user?.email}</p>
+          <div className="flex flex-col max-md:hidden">
+            <p className="font-semibold text-dark-200">{session?.user?.name}</p>
+            <p className="text-xs text-light-500">{session?.user?.email}</p>
+          </div>
         </div>
+
+        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors max-md:hidden">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#EF4444"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
       </div>
     </div>
   );

@@ -5,8 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "placehold.co",
+      },
+      {
+        protocol: "https",
         hostname: "m.media-amazon.com",
-        port: "",
       },
       {
         protocol: "https",
