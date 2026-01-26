@@ -22,9 +22,10 @@ interface Book {
 
 interface BookTableProps {
     books: Book[];
+    isAdmin?: boolean;
 }
 
-const BookTable = ({ books }: BookTableProps) => {
+const BookTable = ({ books, isAdmin = false }: BookTableProps) => {
     const router = useRouter();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -105,9 +106,11 @@ const BookTable = ({ books }: BookTableProps) => {
                                 <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
                                     Date Created
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
-                                    Action
-                                </th>
+                                {isAdmin && (
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
+                                        Action
+                                    </th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
@@ -137,50 +140,52 @@ const BookTable = ({ books }: BookTableProps) => {
                                     <td className="px-4 py-3 text-sm text-dark-200">
                                         {formatDate(book.createdAt)}
                                     </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <Link
-                                                href={`/admin/books/${book.id}/edit`}
-                                                className="text-blue-600 hover:text-blue-800 transition-colors"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="18"
-                                                    height="18"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
+                                    {isAdmin && (
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <Link
+                                                    href={`/admin/books/${book.id}/edit`}
+                                                    className="text-blue-600 hover:text-blue-800 transition-colors"
                                                 >
-                                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                                    <path d="m15 5 4 4" />
-                                                </svg>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(book.id, book.title)}
-                                                disabled={deletingId === book.id}
-                                                className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="18"
-                                                    height="18"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="18"
+                                                        height="18"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                                        <path d="m15 5 4 4" />
+                                                    </svg>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(book.id, book.title)}
+                                                    disabled={deletingId === book.id}
+                                                    className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
                                                 >
-                                                    <path d="M3 6h18" />
-                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="18"
+                                                        height="18"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M3 6h18" />
+                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

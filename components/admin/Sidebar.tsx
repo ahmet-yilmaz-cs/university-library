@@ -7,9 +7,23 @@ import { cn, getInitials } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
-const Sidebar = ({ session }: { session: Session }) => {
+// Admin-only routes - sadece admin'ler görebilir
+const adminOnlyRoutes: string[] = ["/admin/account-requests"];
+
+interface SidebarProps {
+  session: Session;
+  isAdmin: boolean;
+}
+
+const Sidebar = ({ session, isAdmin }: SidebarProps) => {
   const pathname = usePathname();
+
+  // Admin değilse, admin-only linkleri filtrele
+  const visibleLinks = isAdmin
+    ? adminSideBarLinks
+    : adminSideBarLinks.filter((link) => !adminOnlyRoutes.includes(link.route));
 
   return (
     <div className="admin-sidebar">
@@ -25,7 +39,7 @@ const Sidebar = ({ session }: { session: Session }) => {
         </div>
 
         <div className="mt-10 flex flex-col gap-5">
-          {adminSideBarLinks.map((link) => {
+          {visibleLinks.map((link) => {
             const isSelected =
               (link.route !== "/admin" &&
                 pathname.includes(link.route) &&
@@ -73,7 +87,11 @@ const Sidebar = ({ session }: { session: Session }) => {
           </div>
         </div>
 
-        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors max-md:hidden">
+        <button 
+          onClick={() => signOut({ callbackUrl: "/sign-in" })}
+          className="p-2 hover:bg-red-50 rounded-lg transition-colors max-md:hidden"
+          title="Logout"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

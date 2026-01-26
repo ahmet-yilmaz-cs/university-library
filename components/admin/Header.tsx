@@ -2,6 +2,7 @@
 
 import { Session } from "next-auth";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -40,13 +41,42 @@ const Header = ({ session }: { session: Session }) => {
 
   return (
     <header className="admin-header">
-      <div>
-        <h2 className="text-2xl font-semibold text-dark-400">
-          Welcome, {session?.user?.name}
-        </h2>
-        <p className="text-base text-slate-500">
-          Monitor all of your projects and tasks here
-        </p>
+      <div className="flex items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold text-dark-400">
+            Welcome, {session?.user?.name}
+          </h2>
+          <p className="text-base text-slate-500">
+            Monitor all of your projects and tasks here
+          </p>
+        </div>
+        <Link
+          href="/"
+          className="ml-4 flex items-center gap-2 rounded-lg bg-primary-admin px-4 py-2 text-white hover:bg-primary-admin/90 transition-colors"
+        >
+          <Image src="/icons/home.svg" alt="home" width={18} height={18} className="brightness-0 invert" />
+          <span className="max-sm:hidden">Main Page</span>
+        </Link>
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m12 19-7-7 7-7" />
+            <path d="M19 12H5" />
+          </svg>
+          <span className="max-sm:hidden">Go Back</span>
+        </button>
       </div>
 
       <div className="admin-search">

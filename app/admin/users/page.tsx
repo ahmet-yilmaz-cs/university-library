@@ -1,6 +1,7 @@
 import React from "react";
 import { getAllUsers } from "@/lib/admin/actions/user";
 import UserTable from "@/components/admin/UserTable";
+import { checkIsAdmin } from "@/lib/admin/auth";
 
 interface User {
     id: string;
@@ -19,6 +20,7 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
+    const isAdmin = await checkIsAdmin();
     const { query } = await searchParams;
     const result = await getAllUsers();
     const allUsers: User[] = result.success ? result.data : [];
@@ -61,7 +63,7 @@ const Page = async ({ searchParams }: PageProps) => {
             </div>
 
             <div className="mt-7">
-                <UserTable users={users} />
+                <UserTable users={users} isAdmin={isAdmin} />
             </div>
         </section>
     );

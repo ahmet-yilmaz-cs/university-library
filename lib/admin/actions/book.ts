@@ -3,9 +3,19 @@
 import { books } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
+import { checkIsAdmin } from "@/lib/admin/auth";
 
 export const createBook = async (params: BookParams) => {
   try {
+    // Admin kontrolü
+    const isAdmin = await checkIsAdmin();
+    if (!isAdmin) {
+      return {
+        success: false,
+        message: "Unauthorized: Only admins can create books",
+      };
+    }
+
     const newBook = await db
       .insert(books)
       .values({
@@ -61,6 +71,15 @@ export const getAllBooks = async () => {
 
 export const deleteBook = async (bookId: string) => {
   try {
+    // Admin kontrolü
+    const isAdmin = await checkIsAdmin();
+    if (!isAdmin) {
+      return {
+        success: false,
+        message: "Unauthorized: Only admins can delete books",
+      };
+    }
+
     await db.delete(books).where(eq(books.id, bookId));
 
     return {
@@ -108,6 +127,15 @@ export const getBookById = async (bookId: string) => {
 
 export const updateBook = async (bookId: string, params: Partial<BookParams>) => {
   try {
+    // Admin kontrolü
+    const isAdmin = await checkIsAdmin();
+    if (!isAdmin) {
+      return {
+        success: false,
+        message: "Unauthorized: Only admins can update books",
+      };
+    }
+
     const updatedBook = await db
       .update(books)
       .set(params)
