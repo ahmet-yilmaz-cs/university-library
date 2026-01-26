@@ -20,11 +20,6 @@ const Header = ({ session }: HeaderProps) => {
 
       <ul className="flex flex-row items-center gap-8">
         <li>
-          <Link href="/" className="text-light-100 hover:text-white transition-colors">
-            Home
-          </Link>
-        </li>
-        <li>
           <Link href="/search" className="text-light-100 hover:text-white transition-colors">
             Search
           </Link>
