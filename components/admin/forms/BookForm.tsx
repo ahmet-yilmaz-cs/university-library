@@ -263,7 +263,7 @@ const BookForm = ({ type = "create", ...book }: Props) => {
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
               <FormLabel className="text-base font-normal text-dark-500">
-                Book Trailer
+                Book Trailer <span className="text-slate-400">(Optional)</span>
               </FormLabel>
               <FormControl>
                 <FileUpload

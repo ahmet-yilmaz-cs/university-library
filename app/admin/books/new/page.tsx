@@ -2,8 +2,16 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import BookForm from "@/components/admin/forms/BookForm";
+import { checkIsAdmin } from "@/lib/admin/auth";
+import { redirect } from "next/navigation";
 
-const Page = () => {
+const Page = async () => {
+  // Sadece admin'ler yeni kitap ekleyebilir
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) {
+    redirect("/admin/books");
+  }
+
   return (
     <>
       <Button asChild className="back-btn">

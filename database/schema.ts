@@ -9,19 +9,20 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-export const STATUS_ENUM = pgEnum("status", [
+// Enum isimleri database'deki mevcut isimlerle eşleşmeli
+export const STATUS_ENUM = pgEnum("status_enum", [
   "PENDING",
   "APPROVED",
   "REJECTED",
 ]);
-export const ROLE_ENUM = pgEnum("role", ["USER", "ADMIN"]);
-export const BORROW_STATUS_ENUM = pgEnum("borrow_status", [
+export const ROLE_ENUM = pgEnum("role_enum", ["USER", "ADMIN"]);
+export const BORROW_STATUS_ENUM = pgEnum("borrow_status_enum", [
   "BORROWED",
   "RETURNED",
 ]);
 
 export const users = pgTable("users", {
-  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  id: uuid("id").notNull().primaryKey().defaultRandom(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   email: text("email").notNull().unique(),
   universityId: integer("university_id").notNull().unique(),
@@ -36,23 +37,23 @@ export const users = pgTable("users", {
 });
 
 export const books = pgTable("books", {
-  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  id: uuid("id").notNull().primaryKey().defaultRandom(),
   title: varchar("title", { length: 255 }).notNull(),
   author: varchar("author", { length: 255 }).notNull(),
-  genre: text("genre").notNull(),
+  genre: varchar("genre", { length: 255 }).notNull(),
   rating: integer("rating").notNull(),
   coverUrl: text("cover_url").notNull(),
-  coverColor: varchar("cover_color", { length: 7 }).notNull(),
+  coverColor: varchar("cover_color", { length: 255 }).notNull(),
   description: text("description").notNull(),
   totalCopies: integer("total_copies").notNull().default(1),
   availableCopies: integer("available_copies").notNull().default(0),
   videoUrl: text("video_url").notNull(),
-  summary: varchar("summary").notNull(),
+  summary: text("summary").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
 export const borrowRecords = pgTable("borrow_records", {
-  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  id: uuid("id").notNull().primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .references(() => users.id)
     .notNull(),

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getAllBooks } from "@/lib/admin/actions/book";
 import BookTable from "@/components/admin/BookTable";
+import { checkIsAdmin } from "@/lib/admin/auth";
 
 interface Book {
   id: string;
@@ -22,6 +23,7 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
+  const isAdmin = await checkIsAdmin();
   const { query } = await searchParams;
   const result = await getAllBooks();
   const allBooks: Book[] = result.success ? result.data : [];
@@ -65,16 +67,18 @@ const Page = async ({ searchParams }: PageProps) => {
               <path d="M17 4v16" />
             </svg>
           </button>
-          <Button className="bg-primary-admin hover:bg-primary-admin/90" asChild>
-            <Link href="/admin/books/new" className="text-white">
-              + Create a New Book
-            </Link>
-          </Button>
+          {isAdmin && (
+            <Button className="bg-primary-admin hover:bg-primary-admin/90" asChild>
+              <Link href="/admin/books/new" className="text-white">
+                + Create a New Book
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
       <div className="mt-7">
-        <BookTable books={books} />
+        <BookTable books={books} isAdmin={isAdmin} />
       </div>
     </section>
   );

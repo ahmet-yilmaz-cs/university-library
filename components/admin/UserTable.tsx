@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import config from "@/lib/config";
 
 interface User {
     id: string;
@@ -21,9 +22,10 @@ interface User {
 
 interface UserTableProps {
     users: User[];
+    isAdmin?: boolean;
 }
 
-const UserTable = ({ users }: UserTableProps) => {
+const UserTable = ({ users, isAdmin = false }: UserTableProps) => {
     const router = useRouter();
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -129,6 +131,12 @@ const UserTable = ({ users }: UserTableProps) => {
         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     };
 
+    const getUniversityCardUrl = (path: string) => {
+        if (!path) return "#";
+        if (path.startsWith("http")) return path;
+        return `${config.env.imagekit.urlEndpoint}${path}`;
+    };
+
     return (
         <div className="w-full">
             {sortedUsers.length === 0 ? (
@@ -148,6 +156,9 @@ const UserTable = ({ users }: UserTableProps) => {
                                     Role
                                 </th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
+                                    Status
+                                </th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
                                     Books Borrowed
                                 </th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
@@ -156,9 +167,11 @@ const UserTable = ({ users }: UserTableProps) => {
                                 <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
                                     University ID Card
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
-                                    Action
-                                </th>
+                                {isAdmin && (
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">
+                                        Action
+                                    </th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
@@ -188,85 +201,106 @@ const UserTable = ({ users }: UserTableProps) => {
                                         {formatDate(user.createdAt)}
                                     </td>
                                     <td className="px-4 py-3 overflow-visible">
-                                        <div className="relative overflow-visible" ref={openDropdownId === user.id ? dropdownRef : null}>
-                                            <button
-                                                onClick={() => setOpenDropdownId(openDropdownId === user.id ? null : user.id)}
-                                                disabled={updatingRoleId === user.id}
-                                                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                                    user.role === "ADMIN"
-                                                        ? "bg-[#E8F4FF] text-[#3B82F6]"
-                                                        : "bg-[#FFF0F3] text-[#E45A6B]"
-                                                } ${updatingRoleId === user.id ? "opacity-50" : "hover:opacity-80"}`}
-                                            >
-                                                {user.role === "ADMIN" ? "Admin" : "User"}
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
+                                        {isAdmin ? (
+                                            <div className="relative overflow-visible" ref={openDropdownId === user.id ? dropdownRef : null}>
+                                                <button
+                                                    onClick={() => setOpenDropdownId(openDropdownId === user.id ? null : user.id)}
+                                                    disabled={updatingRoleId === user.id}
+                                                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                                                        user.role === "ADMIN"
+                                                            ? "bg-[#E8F4FF] text-[#3B82F6]"
+                                                            : "bg-[#FFF0F3] text-[#E45A6B]"
+                                                    } ${updatingRoleId === user.id ? "opacity-50" : "hover:opacity-80"}`}
                                                 >
-                                                    <path d="m6 9 6 6 6-6" />
-                                                </svg>
-                                            </button>
+                                                    {user.role === "ADMIN" ? "Admin" : "User"}
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="12"
+                                                        height="12"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="m6 9 6 6 6-6" />
+                                                    </svg>
+                                                </button>
 
-                                            {openDropdownId === user.id && (
-                                                <div className="absolute left-0 top-full z-[9999] mt-1 w-32 rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
-                                                    <button
-                                                        onClick={() => handleRoleChange(user.id, "USER")}
-                                                        className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 ${
-                                                            user.role === "USER" ? "text-[#E45A6B]" : "text-gray-700"
-                                                        }`}
-                                                    >
-                                                        User
-                                                        {user.role === "USER" && (
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="16"
-                                                                height="16"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="text-green-500"
-                                                            >
-                                                                <polyline points="20 6 9 17 4 12" />
-                                                            </svg>
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleRoleChange(user.id, "ADMIN")}
-                                                        className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 ${
-                                                            user.role === "ADMIN" ? "text-[#3B82F6]" : "text-gray-700"
-                                                        }`}
-                                                    >
-                                                        Admin
-                                                        {user.role === "ADMIN" && (
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="16"
-                                                                height="16"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                className="text-green-500"
-                                                            >
-                                                                <polyline points="20 6 9 17 4 12" />
-                                                            </svg>
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
+                                                {openDropdownId === user.id && (
+                                                    <div className="absolute left-0 top-full z-[9999] mt-1 w-32 rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
+                                                        <button
+                                                            onClick={() => handleRoleChange(user.id, "USER")}
+                                                            className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 ${
+                                                                user.role === "USER" ? "text-[#E45A6B]" : "text-gray-700"
+                                                            }`}
+                                                        >
+                                                            User
+                                                            {user.role === "USER" && (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16"
+                                                                    height="16"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="text-green-500"
+                                                                >
+                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
+                                                            )}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleRoleChange(user.id, "ADMIN")}
+                                                            className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 ${
+                                                                user.role === "ADMIN" ? "text-[#3B82F6]" : "text-gray-700"
+                                                            }`}
+                                                        >
+                                                            Admin
+                                                            {user.role === "ADMIN" && (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16"
+                                                                    height="16"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="text-green-500"
+                                                                >
+                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                                                user.role === "ADMIN"
+                                                    ? "bg-[#E8F4FF] text-[#3B82F6]"
+                                                    : "bg-[#FFF0F3] text-[#E45A6B]"
+                                            }`}>
+                                                {user.role === "ADMIN" ? "Admin" : "User"}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                                            user.status === "APPROVED"
+                                                ? "bg-green-100 text-green-600"
+                                                : user.status === "PENDING"
+                                                ? "bg-amber-100 text-amber-600"
+                                                : "bg-red-100 text-red-600"
+                                        }`}>
+                                            {user.status === "APPROVED" ? "Approved" : user.status === "PENDING" ? "Pending" : "Rejected"}
+                                        </span>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-dark-200 text-center">
                                         {user.borrowedBooks}
@@ -276,10 +310,10 @@ const UserTable = ({ users }: UserTableProps) => {
                                     </td>
                                     <td className="px-4 py-3">
                                         <a
-                                            href={user.universityCard}
+                                            href={getUniversityCardUrl(user.universityCard)}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                                            className="inline-flex items-center gap-1 text-sm text-primary-admin hover:text-primary-admin/80 transition-colors"
                                         >
                                             View ID Card
                                             <svg
@@ -299,29 +333,31 @@ const UserTable = ({ users }: UserTableProps) => {
                                             </svg>
                                         </a>
                                     </td>
-                                    <td className="px-4 py-3">
-                                        <button
-                                            onClick={() => handleDelete(user.id, user.fullName)}
-                                            disabled={deletingId === user.id}
-                                            className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="18"
-                                                height="18"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
+                                    {isAdmin && (
+                                        <td className="px-4 py-3">
+                                            <button
+                                                onClick={() => handleDelete(user.id, user.fullName)}
+                                                disabled={deletingId === user.id}
+                                                className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
                                             >
-                                                <path d="M3 6h18" />
-                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                            </svg>
-                                        </button>
-                                    </td>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="18"
+                                                    height="18"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                >
+                                                    <path d="M3 6h18" />
+                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
