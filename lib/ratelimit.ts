@@ -1,10 +1,9 @@
-import { Ratelimit } from "@upstash/ratelimit"; 
+import { Ratelimit } from "@upstash/ratelimit";
 import redis from "@/database/redis";
 
-// Create a new ratelimiter, that allows 10 requests per 10 seconds
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "1m"),
+  limiter: Ratelimit.fixedWindow(5, "1m"),
   analytics: true,
   prefix: "@upstash/ratelimit",
 });

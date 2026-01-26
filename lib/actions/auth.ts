@@ -1,15 +1,15 @@
 "use server";
 
-import { users } from "@/database/schema";
-import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema";
 import { hash } from "bcryptjs";
 import { signIn } from "@/auth";
-import { redirect } from "next/navigation";
-import ratelimit from "@/lib/ratelimit";
 import { headers } from "next/headers";
-import config from "@/lib/config";
+import ratelimit from "@/lib/ratelimit";
+import { redirect } from "next/navigation";
 import { workflowClient } from "@/lib/workflow";
+import config from "@/lib/config";
 
 export const signInWithCredentials = async (
   params: Pick<AuthCredentials, "email" | "password">,
@@ -17,12 +17,9 @@ export const signInWithCredentials = async (
   const { email, password } = params;
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
-  
-  const {success} = await ratelimit.limit(ip);
+  const { success } = await ratelimit.limit(ip);
 
-  if (!success) {
-    return redirect("/too-fast");
-  } 
+  if (!success) return redirect("/too-fast");
 
   try {
     const result = await signIn("credentials", {
@@ -43,16 +40,13 @@ export const signInWithCredentials = async (
 };
 
 export const signUp = async (params: AuthCredentials) => {
-  const { fullName, email, password, universityCard, universityId } = params;
+  const { fullName, email, universityId, password, universityCard } = params;
 
   const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
+  const { success } = await ratelimit.limit(ip);
 
-  const {success} = await ratelimit.limit(ip);
+  if (!success) return redirect("/too-fast");
 
-  if (!success) {
-    return redirect("/too-fast");
-  } 
-  //Check if user already exists
   const existingUser = await db
     .select()
     .from(users)
@@ -70,15 +64,15 @@ export const signUp = async (params: AuthCredentials) => {
       fullName,
       email,
       universityId,
-      universityCard,
       password: hashedPassword,
+      universityCard,
     });
 
     await workflowClient.trigger({
       url: `${config.env.prodApiEndpoint}/api/workflows/onboarding`,
-      body: { 
-        email, 
-        fullName 
+      body: {
+        email,
+        fullName,
       },
     });
 

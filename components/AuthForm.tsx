@@ -2,15 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  useForm,
   DefaultValues,
-  UseFormReturn,
-  SubmitHandler,
   FieldValues,
   Path,
+  SubmitHandler,
+  useForm,
+  UseFormReturn,
 } from "react-hook-form";
-
-import { z, ZodType } from "zod";
+import { ZodType } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -79,12 +78,12 @@ const AuthForm = <T extends FieldValues>({
       <p className="text-light-100">
         {isSignIn
           ? "Access the vast collection of resources, and stay updated"
-          : "Please complete all fields and upload a valid university ID to create your account"}
+          : "Please complete all fields and upload a valid university ID to gain access to the library"}
       </p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-6 w-full"
+          className="w-full space-y-6"
         >
           {Object.keys(defaultValues).map((field) => (
             <FormField
@@ -98,12 +97,14 @@ const AuthForm = <T extends FieldValues>({
                   </FormLabel>
                   <FormControl>
                     {field.name === "universityCard" ? (
-                      <FileUpload type="image" 
-                      accept="image/*" 
-                      placeholder="Upload Your ID Card" 
-                      folder="ids" 
-                      variant="dark" 
-                      onFileChange={field.onChange} />
+                      <FileUpload
+                        type="image"
+                        accept="image/*"
+                        placeholder="Upload your ID"
+                        folder="ids"
+                        variant="dark"
+                        onFileChange={field.onChange}
+                      />
                     ) : (
                       <Input
                         required
@@ -122,12 +123,14 @@ const AuthForm = <T extends FieldValues>({
           ))}
 
           <Button type="submit" className="form-btn">
-            {isSignIn ? "Sign in" : "Sign up"}
+            {isSignIn ? "Sign In" : "Sign Up"}
           </Button>
         </form>
       </Form>
+
       <p className="text-center text-base font-medium">
-        {isSignIn ? " New to BookWise? " : "Already have an account?"}
+        {isSignIn ? "New to BookWise? " : "Already have an account? "}
+
         <Link
           href={isSignIn ? "/sign-up" : "/sign-in"}
           className="font-bold text-primary"
