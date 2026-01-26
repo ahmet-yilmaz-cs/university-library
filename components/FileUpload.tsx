@@ -16,7 +16,8 @@ const {
 
 const authenticator = async () => {
   try {
-    const response = await fetch(`${config.env.apiEndpoint}/api/auth/imagekit`);
+    // Relative URL kullan - hem local hem production'da çalışır
+    const response = await fetch("/api/auth/imagekit");
 
     if (!response.ok) {
       const errorText = await response.text();
