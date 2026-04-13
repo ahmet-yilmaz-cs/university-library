@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const Header = ({ session }: { session: Session }) => {
+const Header = ({ session }: { session: Session | null }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -44,7 +44,7 @@ const Header = ({ session }: { session: Session }) => {
       <div className="flex items-center gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-dark-400">
-            Welcome, {session?.user?.name}
+            Welcome, {session?.user?.name || "Guest"}
           </h2>
           <p className="text-base text-slate-500">
             Monitor all of your projects and tasks here

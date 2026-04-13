@@ -9,18 +9,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 
-// Admin-only routes - sadece admin'ler görebilir
-const adminOnlyRoutes: string[] = ["/admin/account-requests"];
+const adminOnlyRoutes: string[] = [];
 
 interface SidebarProps {
-  session: Session;
+  session: Session | null;
   isAdmin: boolean;
 }
 
 const Sidebar = ({ session, isAdmin }: SidebarProps) => {
   const pathname = usePathname();
 
-  // Admin değilse, admin-only linkleri filtrele
   const visibleLinks = isAdmin
     ? adminSideBarLinks
     : adminSideBarLinks.filter((link) => !adminOnlyRoutes.includes(link.route));
@@ -74,40 +72,60 @@ const Sidebar = ({ session, isAdmin }: SidebarProps) => {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="user flex-1">
-          <Avatar>
-            <AvatarFallback className="bg-amber-100">
-              {getInitials(session?.user?.name || "IN")}
-            </AvatarFallback>
-          </Avatar>
+        {session ? (
+          <>
+            <div className="user flex-1">
+              <Avatar>
+                <AvatarFallback className="bg-amber-100">
+                  {getInitials(session?.user?.name || "IN")}
+                </AvatarFallback>
+              </Avatar>
 
-          <div className="flex flex-col max-md:hidden">
-            <p className="font-semibold text-dark-200">{session?.user?.name}</p>
-            <p className="text-xs text-light-500">{session?.user?.email}</p>
-          </div>
-        </div>
+              <div className="flex flex-col max-md:hidden">
+                <p className="font-semibold text-dark-200">{session?.user?.name}</p>
+                <p className="text-xs text-light-500">{session?.user?.email}</p>
+              </div>
+            </div>
 
-        <button 
-          onClick={() => signOut({ callbackUrl: "/sign-in" })}
-          className="p-2 hover:bg-red-50 rounded-lg transition-colors max-md:hidden"
-          title="Logout"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#EF4444"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            <button 
+              onClick={() => signOut({ callbackUrl: "/sign-in" })}
+              className="p-2 hover:bg-red-50 rounded-lg transition-colors max-md:hidden"
+              title="Logout"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#EF4444"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/sign-in"
+            className="user flex-1 hover:bg-slate-50 rounded-lg transition-colors"
           >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-        </button>
+            <Avatar>
+              <AvatarFallback className="bg-slate-200 text-slate-600">
+                G
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex flex-col max-md:hidden">
+              <p className="font-semibold text-dark-200">Guest</p>
+              <p className="text-xs text-primary-admin">Sign in</p>
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   );

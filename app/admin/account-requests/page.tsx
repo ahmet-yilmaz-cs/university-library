@@ -1,7 +1,6 @@
 import React from "react";
 import { getPendingUsers } from "@/lib/admin/actions/user";
 import { checkIsAdmin } from "@/lib/admin/auth";
-import { redirect } from "next/navigation";
 import AccountRequestsTable from "@/components/admin/AccountRequestsTable";
 
 interface PendingUser {
@@ -15,12 +14,7 @@ interface PendingUser {
 }
 
 const Page = async () => {
-  // Sadece admin'ler bu sayfayı görebilir
   const isAdmin = await checkIsAdmin();
-  if (!isAdmin) {
-    redirect("/admin");
-  }
-
   const result = await getPendingUsers();
   const pendingUsers: PendingUser[] = result.success ? result.data : [];
 
@@ -70,8 +64,42 @@ const Page = async () => {
           <h3 className="text-lg font-medium text-dark-400">All caught up!</h3>
           <p className="text-slate-500 mt-1">No pending account requests</p>
         </div>
-      ) : (
+      ) : isAdmin ? (
         <AccountRequestsTable users={pendingUsers} />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-light-400">
+                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">Name</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">Date Joined</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">University ID No</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-slate-500">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingUsers.map((user) => (
+                <tr key={user.id} className="border-b border-light-400 hover:bg-light-300">
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-dark-400">{user.fullName}</span>
+                      <span className="text-xs text-slate-500">{user.email}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-dark-200">
+                    {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-dark-200">{user.universityId}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-600">
+                      Pending
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

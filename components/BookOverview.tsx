@@ -7,7 +7,7 @@ import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 
 interface Props extends Book {
-  userId: string;
+  userId?: string;
 }
 const BookOverview = async ({
   title,
@@ -22,19 +22,26 @@ const BookOverview = async ({
   id,
   userId,
 }: Props) => {
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
+  const isGuest = !userId;
+
+  const user = isGuest
+    ? null
+    : (
+        await db
+          .select()
+          .from(users)
+          .where(eq(users.id, userId))
+          .limit(1)
+      )[0] ?? null;
 
   const borrowingEligibility = {
-    isEligible: availableCopies > 0 && user?.status === "APPROVED",
+    isEligible: !isGuest && availableCopies > 0 && user?.status === "APPROVED",
     message:
       availableCopies <= 0
         ? "Book is not available"
         : "You are not eligible to borrow this book",
   };
+
   return (
     <section className="book-overview">
       <div className="flex flex-1 flex-col gap-5">
@@ -68,13 +75,12 @@ const BookOverview = async ({
 
         <p className="book-description">{description}</p>
 
-        {user && (
-          <BorrowBook
-            bookId={id}
-            userId={userId}
-            borrowingEligibility={borrowingEligibility}
-          />
-        )}
+        <BorrowBook
+          bookId={id}
+          userId={userId}
+          borrowingEligibility={borrowingEligibility}
+          isGuest={isGuest}
+        />
       </div>
 
       <div className="relative flex flex-1 justify-center">

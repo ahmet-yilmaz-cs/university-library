@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getInitials } from "@/lib/utils";
 
 interface HeaderProps {
-  session: Session;
+  session: Session | null;
 }
 
 const Header = ({ session }: HeaderProps) => {
@@ -29,25 +29,38 @@ const Header = ({ session }: HeaderProps) => {
             Admin Panel
           </Link>
         </li>
-        <li>
-          <Link href="/my-profile" className="flex items-center">
-            <Avatar className="h-10 w-10 border-2 border-primary hover:border-white transition-colors">
-              <AvatarFallback className="bg-primary text-dark-100 font-semibold">
-                {getInitials(session?.user?.name || "UN")}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-        </li>
-        <li>
-          <form
-            action={async () => {
-              "use server";
-              await signOut();
-            }}
-          >
-            <Button>Logout</Button>
-          </form>
-        </li>
+
+        {session ? (
+          <>
+            <li>
+              <Link href="/my-profile" className="flex items-center">
+                <Avatar className="h-10 w-10 border-2 border-primary hover:border-white transition-colors">
+                  <AvatarFallback className="bg-primary text-dark-100 font-semibold">
+                    {getInitials(session?.user?.name || "UN")}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </li>
+            <li>
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
+              >
+                <Button>Logout</Button>
+              </form>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link href="/sign-in">
+              <Button className="bg-primary text-dark-100 hover:bg-primary/90 font-semibold px-6">
+                Sign In
+              </Button>
+            </Link>
+          </li>
+        )}
       </ul>
     </header>
   );

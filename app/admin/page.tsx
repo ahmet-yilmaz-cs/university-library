@@ -101,11 +101,9 @@ const Page = async () => {
           <div className="rounded-xl bg-white p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-dark-400">Account Requests</h3>
-              {isAdmin && (
                 <Link href="/admin/account-requests" className="text-sm text-primary-admin hover:underline">
-                  View all
-                </Link>
-              )}
+                View all
+              </Link>
             </div>
             {accountRequests.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">

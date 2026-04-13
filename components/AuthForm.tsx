@@ -138,6 +138,13 @@ const AuthForm = <T extends FieldValues>({
           {isSignIn ? "Create an account" : "Sign in"}
         </Link>
       </p>
+
+      <p className="text-center text-base font-medium">
+        {"Just looking? "}
+        <Link href="/" className="font-bold text-primary">
+          Browse as Guest
+        </Link>
+      </p>
     </div>
   );
 };
