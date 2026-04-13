@@ -141,7 +141,7 @@ const AuthForm = <T extends FieldValues>({
 
       <p className="text-center text-base font-medium">
         {"Just looking? "}
-        <Link href="/" className="font-bold text-primary">
+        <Link href="/api/guest" className="font-bold text-primary">
           Browse as Guest
         </Link>
       </p>

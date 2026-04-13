@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { after } from "next/server";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
@@ -8,6 +10,10 @@ import { eq } from "drizzle-orm";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
+  const cookieStore = await cookies();
+  const isGuestMode = cookieStore.get("guest_mode")?.value === "true";
+
+  if (!session && !isGuestMode) redirect("/sign-in");
 
   if (session?.user?.id) {
     after(async () => {
